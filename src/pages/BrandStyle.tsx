@@ -162,26 +162,64 @@ export const BrandStyle: React.FC = () => {
 export const Settings: React.FC = () => {
   return (
     <div className="p-8 max-w-[820px]">
-      <div className="text-[20px] font-bold text-brand-primary">账号设置</div>
-      <div className="text-[12px] text-gray-500 mt-0.5">你的个人信息、团队、API 与安全</div>
-      <div className="mt-6 waka-card divide-y divide-gray-100">
-        {[
-          ["个人信息", "姓名、邮箱、公司、头像"],
-          ["成员与团队", "邀请成员、角色权限"],
-          ["商店授权", "Amazon / Shopify / TikTok Shop OAuth"],
-          ["API & Webhook", "生成密钥、回调地址"],
-          ["账单", "发票、升级、付款方式"],
-          ["通知", "邮件频率、生成完成提醒"],
-          ["安全", "2FA、登录历史、注销所有设备"],
-        ].map(([t, d]) => (
-          <button key={t} className="w-full p-5 flex items-center justify-between hover:bg-gray-50 text-left">
-            <div>
-              <div className="text-[14px] font-medium text-brand-primary">{t}</div>
-              <div className="text-[11.5px] text-gray-500 mt-0.5">{d}</div>
-            </div>
-            <span className="text-gray-300">›</span>
+      <div className="text-[20px] font-bold text-brand-primary">个人信息</div>
+      <div className="mt-8 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <div>
+            <div className="text-sm font-medium text-gray-700">手机号</div>
+            <div className="text-sm text-gray-500 mt-1">133****0536</div>
+          </div>
+        </div>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <div>
+            <div className="text-sm font-medium text-gray-700">用户名</div>
+            <div className="text-sm text-gray-500 mt-1">用户0536</div>
+          </div>
+          <button className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">
+            编辑名称
           </button>
-        ))}
+        </div>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <div>
+            <div className="text-sm font-medium text-gray-700">密码</div>
+            <div className="text-sm text-gray-500 mt-1">**********</div>
+          </div>
+          <button className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">
+            重置密码
+          </button>
+        </div>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <svg className="w-5 h-5 text-green-600" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.722.722 0 0 1 .598.082l1.584.926a.272.272 0 0 0 .14.047c.134 0 .24-.111.24-.247 0-.06-.023-.12-.038-.177l-.327-1.233a.582.582 0 0 1 .172-.65C23.024 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-6.656-6.088V8.89c-.135-.01-.269-.03-.407-.03zm-2.53 3.274c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982zm4.844 0c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.969-.982z"/>
+            </svg>
+            <div>
+              <div className="text-sm font-medium text-gray-700">微信</div>
+              <div className="text-sm text-gray-500 mt-1">您已绑定，可以通过微信扫码登录LinkFox</div>
+            </div>
+          </div>
+          <button className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">
+            解除绑定
+          </button>
+        </div>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <div>
+            <div className="text-sm font-medium text-gray-700">个人认证</div>
+            <div className="text-sm text-gray-500 mt-1">完成个人认证，可无上限创建团队；未认证最多创建 10 个团队。</div>
+          </div>
+          <button className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">
+            立即认证
+          </button>
+        </div>
+        <div className="flex items-center justify-between px-6 py-4">
+          <div>
+            <div className="text-sm font-medium text-gray-700">注销账号</div>
+            <div className="text-sm text-gray-500 mt-1">注销成功后，你账号的用户数据将被永久清除，所有权益将失效</div>
+          </div>
+          <button className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-red-500 hover:bg-red-50 transition">
+            注销账号
+          </button>
+        </div>
       </div>
     </div>
   );

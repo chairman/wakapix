@@ -16,8 +16,6 @@ const items = [
   { key: "model-swap" as const, label: "模特图", icon: UserRound },
   { key: "history" as const, label: "历史记录", icon: HistoryIcon },
   { key: "brand-presets" as const, label: "品牌预设", icon: Palette },
-  { key: "settings" as const, label: "账号设置", icon: Settings },
-  { key: "subscription" as const, label: "订阅计划", icon: CreditCard },
 ];
 
 export const Sidebar: React.FC = () => {

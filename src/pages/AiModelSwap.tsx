@@ -29,15 +29,17 @@ import {
   Send,
   CircleHelp,
   Trash2,
+  History,
 } from "lucide-react";
 
-type MainTool = "model-swap" | "scene" | "outfit" | "accessory" | "free-gen";
+type MainTool = "model-swap" | "scene" | "outfit" | "accessory" | "free-gen" | "history";
 
 const mainTools: { key: MainTool; label: string; desc: string; icon: React.ReactNode; group: "模特图" | "更多" }[] = [
   { key: "model-swap", label: "AI 换模特", desc: "上传真人 / 预设模特", icon: <UserRound className="w-4 h-4" />, group: "模特图" },
   { key: "scene", label: "AI 换场景", desc: "预设 / 自定义 / 原图", icon: <Mountain className="w-4 h-4" />, group: "模特图" },
   { key: "outfit", label: "AI 穿衣", desc: "商品图直接套模特", icon: <Shirt className="w-4 h-4" />, group: "模特图" },
   { key: "accessory", label: "AI 穿戴", desc: "眼镜 / 配饰 / 发饰", icon: <Gem className="w-4 h-4" />, group: "模特图" },
+  { key: "history", label: "历史记录", desc: "查看生成历史", icon: <History className="w-4 h-4" />, group: "更多" },
   { key: "free-gen", label: "自由生图", desc: "纯提示词生成任意图", icon: <Sparkles className="w-4 h-4" />, group: "更多" },
 ];
 
@@ -132,11 +134,13 @@ export const AiModelSwap: React.FC = () => {
     if (mainTool === "scene") return "保留模特姿势，只替换背景场景（可用原图做底）";
     if (mainTool === "outfit") return "上传商品白底图，自动 P 到模特身上";
     if (mainTool === "accessory") return "眼镜 / 配饰 / 帽子一键 AI 穿戴";
+    if (mainTool === "history") return "查看模特图生成历史记录";
     return "纯提示词自由生图，任意场景 / 商品 / 模特";
   }, [mainTool]);
 
   const costText = useMemo(() => `开始生成 ${count * 30}星币`, [count]);
   const isFreeGen = mainTool === "free-gen";
+  const isHistory = mainTool === "history";
 
   const groups = ["模特图", "更多"] as const;
   const costPerImg = isFreeGen ? 20 : 30;
@@ -202,6 +206,48 @@ export const AiModelSwap: React.FC = () => {
             count={count} setCount={setCount}
             onRefUpload={onRefUpload}
           />
+        ) : isHistory ? (
+          <div className="flex-1 bg-[#F5F7FB] overflow-y-auto">
+            {/* 历史记录界面 */}
+            <div className="p-6">
+              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div className="px-4 py-2.5 flex items-center justify-between border-b border-gray-100">
+                  <div className="text-[12.5px] font-medium text-gray-800 flex items-center gap-1">
+                    <History className="w-3.5 h-3.5 text-gray-500" /> 模特图生成历史
+                  </div>
+                  <span className="text-[11px] text-gray-400">最近 30 天</span>
+                </div>
+                <div className="p-5 grid grid-cols-3 gap-4">
+                  {[
+                    { id: "M001", name: "女模特 · 运动风 连衣裙", count: 4, status: "done", time: "2小时前", thumb: "linear-gradient(135deg,#FBE0EC,#F7A7C4)" },
+                    { id: "M002", name: "男模特 · 商务风 西装", count: 6, status: "done", time: "3小时前", thumb: "linear-gradient(135deg,#E5E9F0,#CFD6E4)" },
+                    { id: "M003", name: "亚洲模特 · 微笑 休闲装", count: 3, status: "done", time: "4小时前", thumb: "linear-gradient(135deg,#F2F4F6,#D7DFE8)" },
+                    { id: "M004", name: "欧式模特 · 酷感 街拍", count: 5, status: "generating", time: "生成中", thumb: "linear-gradient(135deg,#EAEAFD,#A48EE4)" },
+                    { id: "M005", name: "女模特 · 自然妆 家居", count: 8, status: "done", time: "昨天", thumb: "linear-gradient(135deg,#F8F2E8,#E8CFA0)" },
+                    { id: "M006", name: "男模特 · 休闲风 户外", count: 2, status: "done", time: "昨天", thumb: "linear-gradient(135deg,#E9F5F1,#9FD3C3)" },
+                  ].map((item) => (
+                    <div
+                      key={item.id}
+                      className="rounded-xl border border-gray-200 overflow-hidden bg-white hover:border-brand-accent transition cursor-pointer group relative"
+                    >
+                      <div className="aspect-square flex items-center justify-center" style={{ background: item.thumb }}>
+                        <div className="text-[48px] opacity-0.3 group-hover:opacity-100 transition">👩</div>
+                      </div>
+                      <div className="px-3 py-2.5">
+                        <div className="text-[13px] font-medium text-gray-800 truncate">{item.name}</div>
+                        <div className="flex items-center justify-between mt-1">
+                          <div className="text-[11px] text-gray-400">{item.time}</div>
+                          <div className={`text-[11px] px-1.5 py-0.5 rounded ${item.status === "done" ? "bg-emerald-50 text-emerald-600" : "bg-orange-50 text-orange-600"}`}>
+                            {item.status === "done" ? `${item.count}张` : "生成中"}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         ) : (
           <>
             {/* 中间配置 */}

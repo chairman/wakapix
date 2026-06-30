@@ -32,7 +32,7 @@ type MainTool =
   | "handheld"
   | "batch";
 
-type ProductSub = "my" | "scene-ref";
+type ProductSub = "my" | "scene-ref" | "history";
 
 const mainTools: { key: MainTool; label: string; icon: React.ElementType }[] = [
   { key: "product", label: "商品图", icon: Image },
@@ -290,166 +290,230 @@ export const ProductImages: React.FC = () => {
   );
 
   const productPreview = (
-    <div className="flex-1 bg-[#F5F7FB] overflow-y-auto">
-      <div className="sticky top-0 z-10 bg-[#F5F7FB] border-b border-gray-200 px-6 py-3">
-        <div className="flex items-center gap-1">
+    <div className="flex flex-1 bg-[#F5F7FB] overflow-hidden">
+      {/* Left Sidebar - Vertical Navigation */}
+      <aside className="w-[160px] bg-white border-r border-gray-200 flex flex-col py-4">
+        <div className="flex flex-col gap-1">
           <button
             onClick={() => setProductSub("my")}
-            className={`px-4 py-2.5 text-[14px] transition relative ${productSub === "my" ? "text-[#8B5CF6] font-semibold" : "text-gray-500 hover:text-gray-800"}`}
+            className={`relative flex items-center gap-2 px-4 py-2.5 mx-2 rounded-lg text-[13px] text-left transition ${
+              productSub === "my"
+                ? "bg-[#8B5CF6] text-white font-medium"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
           >
+            <FolderOpen className="w-4 h-4" />
             我的商品
-            {productSub === "my" && <div className="absolute left-2 right-2 -bottom-[1px] h-[2px] bg-[#8B5CF6] rounded" />}
           </button>
           <button
             onClick={() => setProductSub("scene-ref")}
-            className={`px-4 py-2.5 text-[14px] transition relative ${productSub === "scene-ref" ? "text-[#8B5CF6] font-semibold" : "text-gray-500 hover:text-gray-800"}`}
+            className={`relative flex items-center gap-2 px-4 py-2.5 mx-2 rounded-lg text-[13px] text-left transition ${
+              productSub === "scene-ref"
+                ? "bg-[#8B5CF6] text-white font-medium"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
           >
+            <Image className="w-4 h-4" />
             场景参考图
-            {productSub === "scene-ref" && <div className="absolute left-2 right-2 -bottom-[1px] h-[2px] bg-[#8B5CF6] rounded" />}
+          </button>
+          <button
+            onClick={() => setProductSub("history")}
+            className={`relative flex items-center gap-2 px-4 py-2.5 mx-2 rounded-lg text-[13px] text-left transition ${
+              productSub === "history"
+                ? "bg-[#8B5CF6] text-white font-medium"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
+          >
+            <History className="w-4 h-4" />
+            历史记录
           </button>
         </div>
-      </div>
+      </aside>
 
-      {productSub === "my" && (
-        <div className="p-6">
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div className="px-4 py-2.5 flex items-center justify-between border-b border-gray-100">
-              <div className="text-[12.5px] font-medium text-gray-800 flex items-center gap-1">
-                <FolderOpen className="w-3.5 h-3.5 text-gray-500" /> 我的商品素材
-              </div>
-              <span className="text-[11px] text-gray-400">共 {myProducts.length} 件</span>
-            </div>
-            <div className="p-5 grid grid-cols-3 gap-4">
-              {myProducts.map((p) => (
-                <div
-                  key={p.id}
-                  className="rounded-xl border border-gray-200 overflow-hidden bg-white hover:border-[#A78BFA] transition cursor-pointer group relative"
-                >
-                  <div className="aspect-square bg-gradient-to-br from-gray-50 to-white flex items-center justify-center text-[64px]">
-                    {p.img}
-                  </div>
-                  <div className="px-3 py-2.5">
-                    <div className="text-[13px] font-medium text-gray-800 truncate">{p.name}</div>
-                    <div className="text-[11px] text-gray-400 mt-0.5">SKU：{p.sku}</div>
-                  </div>
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition flex gap-1">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setTool("product"); setUploaded(true); }}
-                      className="w-8 h-8 rounded-lg bg-white/90 shadow-sm text-gray-600 hover:text-[#8B5CF6] flex items-center justify-center"
-                    >
-                      <Sparkles className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setTool("product-replace"); setTargetUploaded(true); }}
-                      className="w-8 h-8 rounded-lg bg-white/90 shadow-sm text-gray-600 hover:text-[#8B5CF6] flex items-center justify-center"
-                    >
-                      <RefreshCw className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
+      {/* Main Content */}
+      <div className="flex-1 overflow-y-auto">
+        {productSub === "my" && (
+          <div className="p-6">
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="px-4 py-2.5 flex items-center justify-between border-b border-gray-100">
+                <div className="text-[12.5px] font-medium text-gray-800 flex items-center gap-1">
+                  <FolderOpen className="w-3.5 h-3.5 text-gray-500" /> 我的商品素材
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {productSub === "scene-ref" && (
-        <div className="p-6">
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div className="px-5 py-3 border-b border-gray-100 space-y-2.5">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[12px] text-gray-500">排序:</span>
-                {["智能推荐", "按收藏时间", "按素材热度"].map((t, i) => (
-                  <button
-                    key={t}
-                    className={`px-3 py-1 rounded-md text-[11.5px] ${i === 0 ? "bg-[#F5F3FF] text-[#8B5CF6] border border-[#DDD6FE]" : "bg-gray-50 text-gray-600 border border-gray-200"}`}
-                  >
-                    {t}
-                  </button>
-                ))}
-                <div className="ml-auto flex items-center gap-1 h-[28px] px-3 rounded-md bg-gray-50 border border-gray-200 text-[11.5px] text-gray-500">
-                  🔍 搜索标签关键词
-                </div>
+                <span className="text-[11px] text-gray-400">共 {myProducts.length} 件</span>
               </div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[12px] text-gray-500">商品:</span>
-                {["全部", "日用百货", "家居家装", "数码配件", "美妆个护", "家用电器", "玩具类目", "儿童&母婴", "3C数码", "办公用品", "运动户外", "工艺/艺术品", "服饰用品", "食品饮料", "美容保健/护理", "汽车用品", "其他"].map((t, i) => (
-                  <button
-                    key={t}
-                    className={`px-3 py-1 rounded-md text-[11.5px] ${i === 0 ? "bg-[#F5F3FF] text-[#8B5CF6] border border-[#DDD6FE]" : "bg-gray-50 text-gray-600 border border-gray-200"}`}
+              <div className="p-5 grid grid-cols-3 gap-4">
+                {myProducts.map((p) => (
+                  <div
+                    key={p.id}
+                    className="rounded-xl border border-gray-200 overflow-hidden bg-white hover:border-[#A78BFA] transition cursor-pointer group relative"
                   >
-                    {t}
-                  </button>
-                ))}
-              </div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[12px] text-gray-500">场景:</span>
-                {["全部", "室内", "室外", "节日活动", "简单背景", "工作场景", "休闲场景", "运动场所", "自然环境", "舞台", "科技"].map((t, i) => (
-                  <button
-                    key={t}
-                    className={`px-3 py-1 rounded-md text-[11.5px] ${i === 0 ? "bg-[#F5F3FF] text-[#8B5CF6] border border-[#DDD6FE]" : "bg-gray-50 text-gray-600 border border-gray-200"}`}
-                  >
-                    {t}
-                  </button>
-                ))}
-                <button className="ml-auto text-[11.5px] text-gray-500 hover:text-[#8B5CF6] flex items-center gap-1">
-                  收起 ∧
-                </button>
-              </div>
-            </div>
-
-            <div className="p-5 grid grid-cols-4 gap-4">
-              {[
-                { m: "🫖", t: "桌面-保温杯", bg: "from-sky-100 via-indigo-50 to-purple-50" },
-                { m: "🛏️", t: "卧室-床", bg: "from-slate-100 via-gray-50 to-white" },
-                { m: "🔦", t: "前台-LED灯", bg: "from-amber-50 via-orange-50 to-amber-100" },
-                { m: "🧺", t: "餐厅-收纳篮", bg: "from-amber-100 via-orange-50 to-rose-50" },
-                { m: "💡", t: "室内-吊灯", bg: "from-slate-100 via-gray-50 to-white" },
-                { m: "⌚", t: "纯色背景-皮带", bg: "from-rose-50 via-pink-50 to-slate-50" },
-                { m: "🛋️", t: "卧室-地毯", bg: "from-slate-100 via-gray-50 to-white" },
-                { m: "⌚", t: "纯色背景-皮带", bg: "from-rose-50 via-pink-50 to-slate-50" },
-                { m: "🦽", t: "室内-助行器", bg: "from-sky-50 via-indigo-50 to-purple-50" },
-                { m: "🧸", t: "前台-婴儿连体衣", bg: "from-rose-50 via-pink-50 to-amber-50" },
-                { m: "🕶️", t: "海滩-太阳镜", bg: "from-amber-50 via-orange-50 to-rose-50" },
-                { m: "🧴", t: "厨房-搅拌器", bg: "from-rose-50 via-pink-50 to-amber-50" },
-                { m: "🧸", t: "卧室-玩具", bg: "from-amber-50 via-orange-50 to-rose-50" },
-                { m: "🪴", t: "客厅-玩偶", bg: "from-emerald-50 via-green-50 to-lime-50" },
-                { m: "🧸", t: "万圣节-吊环", bg: "from-amber-100 via-orange-50 to-rose-100" },
-                { m: "🪟", t: "窗户", bg: "from-sky-100 via-indigo-50 to-white" },
-                { m: "🏝️", t: "沙滩", bg: "from-amber-50 via-orange-50 to-rose-50" },
-                { m: "🎨", t: "艺术", bg: "from-rose-50 via-pink-50 to-purple-50" },
-                { m: "🛋️", t: "沙发", bg: "from-slate-100 via-gray-50 to-white" },
-                { m: "🪷", t: "花丛", bg: "from-pink-50 via-rose-50 to-emerald-50" },
-                { m: "🌄", t: "日落", bg: "from-orange-50 via-amber-50 to-rose-100" },
-                { m: "🪴", t: "绿植", bg: "from-emerald-100 via-green-50 to-lime-50" },
-                { m: "🛋️", t: "床品", bg: "from-slate-50 via-white to-rose-50" },
-                { m: "✨", t: "更多...", bg: "from-gray-50 via-white to-gray-100" },
-              ].map((x, i) => (
-                <div
-                  key={i}
-                  className="rounded-xl border border-gray-100 overflow-hidden bg-white hover:border-[#A78BFA] transition cursor-pointer group relative"
-                >
-                  <div className={`relative aspect-[4/3] bg-gradient-to-br ${x.bg} flex items-center justify-center text-[72px]`}>
-                    <div>{x.m}</div>
-                    <div className="absolute left-2 bottom-2 w-[52px] h-[52px] rounded-lg bg-white/95 border border-gray-100 shadow-sm flex items-center justify-center text-[22px]">
-                      {i % 8 === 0 ? "🏞️" : i % 8 === 1 ? "🫖" : i % 8 === 2 ? "🛋️" : i % 8 === 3 ? "🧺" : i % 8 === 4 ? "🧴" : i % 8 === 5 ? "🪷" : i % 8 === 6 ? "🧸" : "🪴"}
+                    <div className="aspect-square bg-gradient-to-br from-gray-50 to-white flex items-center justify-center text-[64px]">
+                      {p.img}
                     </div>
-                    <button className="absolute right-2 bottom-2 px-2 py-1 rounded-md text-[11px] bg-white/95 border border-gray-100 text-[#8B5CF6] font-medium opacity-0 group-hover:opacity-100 transition">
-                      做同款
-                    </button>
+                    <div className="px-3 py-2.5">
+                      <div className="text-[13px] font-medium text-gray-800 truncate">{p.name}</div>
+                      <div className="text-[11px] text-gray-400 mt-0.5">SKU：{p.sku}</div>
+                    </div>
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition flex gap-1">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setTool("product"); setUploaded(true); }}
+                        className="w-8 h-8 rounded-lg bg-white/90 shadow-sm text-gray-600 hover:text-[#8B5CF6] flex items-center justify-center"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setTool("product-replace"); setTargetUploaded(true); }}
+                        className="w-8 h-8 rounded-lg bg-white/90 shadow-sm text-gray-600 hover:text-[#8B5CF6] flex items-center justify-center"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
-                  <div className="px-2.5 py-2 flex items-center justify-between">
-                    <div className="text-[11.5px] font-medium text-gray-700 truncate">{x.t}</div>
-                    <button className="opacity-0 group-hover:opacity-100 transition w-6 h-6 rounded hover:bg-[#F5F3FF] flex items-center justify-center">
-                      <span className="text-[12px]">♥</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {productSub === "scene-ref" && (
+          <div className="p-6">
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="px-5 py-3 border-b border-gray-100 space-y-2.5">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[12px] text-gray-500">排序:</span>
+                  {["智能推荐", "按收藏时间", "按素材热度"].map((t, i) => (
+                    <button
+                      key={t}
+                      className={`px-3 py-1 rounded-md text-[11.5px] ${i === 0 ? "bg-[#F5F3FF] text-[#8B5CF6] border border-[#DDD6FE]" : "bg-gray-50 text-gray-600 border border-gray-200"}`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                  <div className="ml-auto flex items-center gap-1 h-[28px] px-3 rounded-md bg-gray-50 border border-gray-200 text-[11.5px] text-gray-500">
+                    🔍 搜索标签关键词
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[12px] text-gray-500">商品:</span>
+                  {["全部", "日用百货", "家居家装", "数码配件", "美妆个护", "家用电器", "玩具类目", "儿童&母婴", "3C数码", "办公用品", "运动户外", "工艺/艺术品", "服饰用品", "食品饮料", "美容保健/护理", "汽车用品", "其他"].map((t, i) => (
+                    <button
+                      key={t}
+                      className={`px-3 py-1 rounded-md text-[11.5px] ${i === 0 ? "bg-[#F5F3FF] text-[#8B5CF6] border border-[#DDD6FE]" : "bg-gray-50 text-gray-600 border border-gray-200"}`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[12px] text-gray-500">场景:</span>
+                  {["全部", "室内", "室外", "节日活动", "简单背景", "工作场景", "休闲场景", "运动场所", "自然环境", "舞台", "科技"].map((t, i) => (
+                    <button
+                      key={t}
+                      className={`px-3 py-1 rounded-md text-[11.5px] ${i === 0 ? "bg-[#F5F3FF] text-[#8B5CF6] border border-[#DDD6FE]" : "bg-gray-50 text-gray-600 border border-gray-200"}`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                  <button className="ml-auto text-[11.5px] text-gray-500 hover:text-[#8B5CF6] flex items-center gap-1">
+                    收起 ∧
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-5 grid grid-cols-4 gap-4">
+                {[
+                  { m: "🫖", t: "桌面-保温杯", bg: "from-sky-100 via-indigo-50 to-purple-50" },
+                  { m: "🛏️", t: "卧室-床", bg: "from-slate-100 via-gray-50 to-white" },
+                  { m: "🔦", t: "前台-LED灯", bg: "from-amber-50 via-orange-50 to-amber-100" },
+                  { m: "🧺", t: "餐厅-收纳篮", bg: "from-amber-100 via-orange-50 to-rose-50" },
+                  { m: "💡", t: "室内-吊灯", bg: "from-slate-100 via-gray-50 to-white" },
+                  { m: "⌚", t: "纯色背景-皮带", bg: "from-rose-50 via-pink-50 to-slate-50" },
+                  { m: "🛋️", t: "卧室-地毯", bg: "from-slate-100 via-gray-50 to-white" },
+                  { m: "⌚", t: "纯色背景-皮带", bg: "from-rose-50 via-pink-50 to-slate-50" },
+                  { m: "🦽", t: "室内-助行器", bg: "from-sky-50 via-indigo-50 to-purple-50" },
+                  { m: "🧸", t: "前台-婴儿连体衣", bg: "from-rose-50 via-pink-50 to-amber-50" },
+                  { m: "🕶️", t: "海滩-太阳镜", bg: "from-amber-50 via-orange-50 to-rose-50" },
+                  { m: "🧴", t: "厨房-搅拌器", bg: "from-rose-50 via-pink-50 to-amber-50" },
+                  { m: "🧸", t: "卧室-玩具", bg: "from-amber-50 via-orange-50 to-rose-50" },
+                  { m: "🪴", t: "客厅-玩偶", bg: "from-emerald-50 via-green-50 to-lime-50" },
+                  { m: "🧸", t: "万圣节-吊环", bg: "from-amber-100 via-orange-50 to-rose-100" },
+                  { m: "🪟", t: "窗户", bg: "from-sky-100 via-indigo-50 to-white" },
+                  { m: "🏝️", t: "沙滩", bg: "from-amber-50 via-orange-50 to-rose-50" },
+                  { m: "🎨", t: "艺术", bg: "from-rose-50 via-pink-50 to-purple-50" },
+                  { m: "🛋️", t: "沙发", bg: "from-slate-100 via-gray-50 to-white" },
+                  { m: "🪷", t: "花丛", bg: "from-pink-50 via-rose-50 to-emerald-50" },
+                  { m: "🌄", t: "日落", bg: "from-orange-50 via-amber-50 to-rose-100" },
+                  { m: "🪴", t: "绿植", bg: "from-emerald-100 via-green-50 to-lime-50" },
+                  { m: "🛋️", t: "床品", bg: "from-slate-50 via-white to-rose-50" },
+                  { m: "✨", t: "更多...", bg: "from-gray-50 via-white to-gray-100" },
+                ].map((x, i) => (
+                  <div
+                    key={i}
+                    className="rounded-xl border border-gray-100 overflow-hidden bg-white hover:border-[#A78BFA] transition cursor-pointer group relative"
+                  >
+                    <div className={`relative aspect-[4/3] bg-gradient-to-br ${x.bg} flex items-center justify-center text-[72px]`}>
+                      <div>{x.m}</div>
+                      <div className="absolute left-2 bottom-2 w-[52px] h-[52px] rounded-lg bg-white/95 border border-gray-100 shadow-sm flex items-center justify-center text-[22px]">
+                        {i % 8 === 0 ? "🏞️" : i % 8 === 1 ? "🫖" : i % 8 === 2 ? "🛋️" : i % 8 === 3 ? "🧺" : i % 8 === 4 ? "🧴" : i % 8 === 5 ? "🪷" : i % 8 === 6 ? "🧸" : "🪴"}
+                      </div>
+                      <button className="absolute right-2 bottom-2 px-2 py-1 rounded-md text-[11px] bg-white/95 border border-gray-100 text-[#8B5CF6] font-medium opacity-0 group-hover:opacity-100 transition">
+                        做同款
+                      </button>
+                    </div>
+                    <div className="px-2.5 py-2 flex items-center justify-between">
+                      <div className="text-[11.5px] font-medium text-gray-700 truncate">{x.t}</div>
+                      <button className="opacity-0 group-hover:opacity-100 transition w-6 h-6 rounded hover:bg-[#F5F3FF] flex items-center justify-center">
+                        <span className="text-[12px]">♥</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {productSub === "history" && (
+          <div className="p-6">
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="px-4 py-2.5 flex items-center justify-between border-b border-gray-100">
+                <div className="text-[12.5px] font-medium text-gray-800 flex items-center gap-1">
+                  <History className="w-3.5 h-3.5 text-gray-500" /> 商品图生成历史
+                </div>
+                <span className="text-[11px] text-gray-400">最近 30 天</span>
+              </div>
+              <div className="p-5 grid grid-cols-3 gap-4">
+                {[
+                  { id: "T001", name: "北欧保温咖啡杯 500ml", count: 9, status: "done", time: "2小时前", thumb: "linear-gradient(135deg,#DDE8F8,#A9C0E5)" },
+                  { id: "T002", name: "便携陶瓷马克杯", count: 12, status: "done", time: "3小时前", thumb: "linear-gradient(135deg,#FBE5D6,#E39667)" },
+                  { id: "T003", name: "瑜伽垫 TPE 环保 10mm", count: 8, status: "done", time: "4小时前", thumb: "linear-gradient(135deg,#FBE0EC,#F7A7C4)" },
+                  { id: "T004", name: "户外折叠太阳能灯", count: 9, status: "generating", time: "生成中", thumb: "linear-gradient(135deg,#EAEAFD,#A48EE4)" },
+                  { id: "T005", name: "厨房硅胶煎蛋铲套装", count: 6, status: "done", time: "昨天", thumb: "linear-gradient(135deg,#D8EFD3,#8FD0A8)" },
+                  { id: "T006", name: "便携电动打蛋器", count: 4, status: "done", time: "昨天", thumb: "linear-gradient(135deg,#E5E9F0,#CFD6E4)" },
+                ].map((item) => (
+                  <div
+                    key={item.id}
+                    className="rounded-xl border border-gray-200 overflow-hidden bg-white hover:border-[#A78BFA] transition cursor-pointer group relative"
+                  >
+                    <div className="aspect-square flex items-center justify-center" style={{ background: item.thumb }}>
+                      <div className="text-[48px] opacity-0.3 group-hover:opacity-100 transition">📷</div>
+                    </div>
+                    <div className="px-3 py-2.5">
+                      <div className="text-[13px] font-medium text-gray-800 truncate">{item.name}</div>
+                      <div className="flex items-center justify-between mt-1">
+                        <div className="text-[11px] text-gray-400">{item.time}</div>
+                        <div className={`text-[11px] px-1.5 py-0.5 rounded ${item.status === "done" ? "bg-emerald-50 text-emerald-600" : "bg-orange-50 text-orange-600"}`}>
+                          {item.status === "done" ? `${item.count}张` : "生成中"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 

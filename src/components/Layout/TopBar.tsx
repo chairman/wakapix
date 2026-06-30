@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { useAppStore } from "@/store/useStore";
-import { Search, ChevronDown, Sparkles, X, ArrowRight } from "lucide-react";
+import { Search, ChevronDown, Sparkles, X, ArrowRight, Users, UserRound, Check, Settings, Globe, HelpCircle, LogOut, Zap, CreditCard, ChevronRight, Palette, Image, History as HistoryIcon, Home } from "lucide-react";
+
+const navItems = [
+  { key: "home" as const, label: "首页", icon: Home },
+  { key: "product-images" as const, label: "商品图", icon: Image },
+  { key: "model-swap" as const, label: "模特图", icon: UserRound },
+];
 
 const UpgradeModal: React.FC = () => {
   const { modal, closeModal } = useAppStore();
@@ -50,60 +56,265 @@ const UpgradeModal: React.FC = () => {
 };
 
 export const TopBar: React.FC = () => {
-  const { monthQuota, monthUsed, openModal } = useAppStore();
+  const { monthQuota, monthUsed, openModal, currentContext, switchContext, teams, personalInfo, logout, setRoute, navKey } = useAppStore();
   const [search, setSearch] = useState("");
+  const [showTeamSwitcher, setShowTeamSwitcher] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   const pct = Math.min(100, Math.round((monthUsed / monthQuota) * 100));
+  const isPersonal = currentContext === "personal";
+  const currentTeam = teams.find((t) => t.id === currentContext);
 
   return (
-    <header className="h-[64px] bg-white border-b border-gray-200 flex items-center gap-4 px-6 sticky top-0 z-20">
-      <div className="flex items-center gap-2 w-[340px]">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="搜索项目、商品、图片..."
-            className="w-full pl-9 pr-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm focus:outline-none focus:border-brand-accent focus:bg-white transition"
-          />
-        </div>
-      </div>
+    <>
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-20">
+        <div className="flex items-center justify-between px-6">
+          {/* Logo */}
+          <div className="flex items-center gap-2 h-[64px]">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-accent to-[#FF8A5D] flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <div className="leading-tight">
+              <div className="text-[16px] font-bold tracking-tight text-brand-primary">Wakapix</div>
+              <div className="text-[10px] text-gray-500">跨境电商 AI 工作站</div>
+            </div>
+          </div>
 
-      <div className="flex-1" />
+          {/* Navigation Tabs */}
+          <nav className="flex items-center gap-1">
+            {navItems.map((item) => {
+              const active = navKey === item.key;
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.key}
+                  onClick={() => setRoute(item.key)}
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    active
+                      ? "bg-brand-accent/10 text-brand-accent"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
 
-      <button
-        onClick={() => openModal({ kind: "upgrade", title: "upgrade" })}
-        className="flex items-center gap-3 px-3 py-1.5 rounded-lg bg-brand-light hover:bg-blue-100 transition group"
-      >
-        <Sparkles className="w-4 h-4 text-brand-accent" />
-        <div className="text-left">
-          <div className="text-[11px] text-gray-500 leading-none">本月剩余</div>
-          <div className="text-[13px] font-semibold text-brand-primary leading-tight">
-            {monthQuota - monthUsed} 张 / {monthQuota}
+          {/* Right Section */}
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <button
+                className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-gray-50 transition"
+                onMouseEnter={() => setShowUserMenu(true)}
+              >
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white flex items-center justify-center font-semibold text-sm">
+                  {personalInfo.name.charAt(0)}
+                </div>
+                <div className="hidden sm:block text-left">
+                  <div className="text-[12px] font-medium text-gray-800">{personalInfo.name}</div>
+                  <div className="text-[10px] text-gray-500">免费版</div>
+                </div>
+                <ChevronDown className="w-4 h-4 text-gray-400" />
+              </button>
+              {showUserMenu || showTeamSwitcher ? (
+                <div className="absolute right-0 top-full mt-2 flex gap-2 z-40">
+                  {showTeamSwitcher && (
+                    <div className="w-60 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden">
+                      <button
+                        onClick={() => {
+                          switchContext("personal");
+                          setShowTeamSwitcher(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-4 py-3 text-left transition ${
+                          isPersonal ? "bg-purple-50" : "hover:bg-gray-50"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm ${
+                            isPersonal ? "bg-gradient-to-br from-blue-600 to-purple-600 text-white" : "bg-gray-100 text-gray-600"
+                          }`}>
+                            {personalInfo.name.charAt(0)}
+                          </div>
+                          <div>
+                            <div className={`text-sm font-medium ${isPersonal ? "text-gray-800" : "text-gray-600"}`}>
+                              {personalInfo.name}
+                            </div>
+                            <div className="flex items-center gap-1 mt-0.5">
+                              <span className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded">AI作图 免费版</span>
+                              <span className="text-xs px-1.5 py-0.5 bg-purple-100 text-purple-600 rounded">Agent 免费版</span>
+                              <span className="text-xs text-gray-400 ml-1">个人账号</span>
+                            </div>
+                          </div>
+                        </div>
+                        {isPersonal && <Check className="w-4 h-4 text-purple-600" />}
+                      </button>
+                      <div className="border-t border-gray-100 px-4 py-2">
+                        <button className="w-full flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition">
+                          <div className="w-5 h-5 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center">
+                            <span className="text-xs text-gray-400">+</span>
+                          </div>
+                          <span>创建团队</span>
+                        </button>
+                      </div>
+                      <div className="border-t border-gray-100 px-3 py-2 text-xs text-gray-500">我的团队</div>
+                      {teams.map((team) => (
+                        <button
+                          key={team.id}
+                          onClick={() => {
+                            switchContext(team.id);
+                            setShowTeamSwitcher(false);
+                          }}
+                          className={`w-full flex items-center justify-between px-4 py-3 text-left transition ${
+                            currentContext === team.id ? "bg-purple-50" : "hover:bg-gray-50"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                              currentContext === team.id ? "bg-gradient-to-br from-blue-600 to-purple-600 text-white" : "bg-gray-100 text-gray-600"
+                            }`}>
+                              <Users className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <div className={`text-sm font-medium ${currentContext === team.id ? "text-gray-800" : "text-gray-600"}`}>
+                                {team.name}
+                              </div>
+                              <div className="flex items-center gap-1 mt-0.5">
+                                <span className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded">AI作图 免费版</span>
+                                <span className="text-xs px-1.5 py-0.5 bg-purple-100 text-purple-600 rounded">Agent 免费版</span>
+                              </div>
+                            </div>
+                          </div>
+                          {currentContext === team.id && <Check className="w-4 h-4 text-purple-600" />}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {showUserMenu && (
+                    <div
+                      className="w-72 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden"
+                      onMouseLeave={() => setShowUserMenu(false)}
+                    >
+                      <div className="p-4 border-b border-gray-100">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white flex items-center justify-center font-semibold">
+                              {personalInfo.name.charAt(0)}
+                            </div>
+                            <div>
+                              <div className="font-semibold text-gray-800">{personalInfo.name}</div>
+                              <div className="text-sm text-gray-500">{isPersonal ? "个人账号" : currentTeam?.name} | {personalInfo.phone}</div>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => setShowTeamSwitcher(true)}
+                            className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
+                          >
+                            切换团队 <ChevronDown className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="p-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="text-center p-3 bg-blue-50 rounded-lg">
+                            <div className="text-2xl font-bold text-blue-600">{personalInfo.availableQuota}</div>
+                            <div className="text-xs text-blue-500 mt-1">可用算力</div>
+                          </div>
+                          <div className="text-center p-3 bg-purple-50 rounded-lg">
+                            <div className="text-2xl font-bold text-purple-600">{personalInfo.availablePoints}</div>
+                            <div className="text-xs text-purple-500 mt-1">可用积分</div>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 space-y-3">
+                          <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                            <div className="flex items-center gap-2">
+                              <Zap className="w-5 h-5 text-orange-500" />
+                              <div>
+                                <div className="text-sm font-medium text-gray-800">Wakapix AI 作图 · 免费版</div>
+                                <div className="text-xs text-gray-500">AI 生成高转化文案和全套场景营销素材</div>
+                              </div>
+                            </div>
+                            <button className="px-3 py-1.5 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                              立即购买
+                            </button>
+                          </div>
+                          <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                            <div className="flex items-center gap-2">
+                              <Zap className="w-5 h-5 text-purple-500" />
+                              <div>
+                                <div className="text-sm font-medium text-gray-800">Wakapix Agent · 免费版</div>
+                                <div className="text-xs text-gray-500">从繁杂的数据报表到清晰的决策指令</div>
+                              </div>
+                            </div>
+                            <button className="px-3 py-1.5 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                              立即购买
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="divide-y divide-gray-100">
+                        <button className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition">
+                          <div className="flex items-center gap-3">
+                            <CreditCard className="w-4 h-4 text-blue-500" />
+                            <span className="text-sm text-gray-700">套餐管理</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-gray-400" />
+                        </button>
+                        <button onClick={() => {
+                          setRoute("profile");
+                          setShowUserMenu(false);
+                        }} className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition">
+                          <div className="flex items-center gap-3">
+                            <UserRound className="w-4 h-4 text-green-500" />
+                            <span className="text-sm text-gray-700">个人中心</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-gray-400" />
+                        </button>
+                        <button className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition">
+                          <div className="flex items-center gap-3">
+                            <Settings className="w-4 h-4 text-purple-500" />
+                            <span className="text-sm text-gray-700">API 设置</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-gray-400" />
+                        </button>
+                        <button className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition">
+                          <div className="flex items-center gap-3">
+                            <Globe className="w-4 h-4 text-orange-500" />
+                            <span className="text-sm text-gray-700">官网</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-gray-400" />
+                        </button>
+                        <button className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition">
+                          <div className="flex items-center gap-3">
+                            <HelpCircle className="w-4 h-4 text-cyan-500" />
+                            <span className="text-sm text-gray-700">帮助与客服</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-gray-400" />
+                        </button>
+                        <button
+                          onClick={logout}
+                          className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition text-red-500"
+                        >
+                          <div className="flex items-center gap-3">
+                            <LogOut className="w-4 h-4" />
+                            <span className="text-sm">退出登录</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
-        <div className="w-[96px] h-1.5 bg-gray-200 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-brand-accent rounded-full transition-all"
-            style={{ width: `${pct}%` }}
-          />
-        </div>
-        <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-brand-accent transition" />
-      </button>
-
-      <div className="w-px h-6 bg-gray-200 mx-1" />
-
-      <button className="flex items-center gap-2">
-        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-primary to-[#2A4F7A] text-white flex items-center justify-center font-semibold text-sm">
-          LX
-        </div>
-        <div className="hidden sm:block text-left">
-          <div className="text-[12px] font-medium">Leo Xu</div>
-          <div className="text-[10px] text-gray-500">Pro 会员</div>
-        </div>
-      </button>
-
+      </header>
       <UpgradeModal />
-    </header>
+    </>
   );
 };

@@ -6,17 +6,21 @@ import { BrandPresets } from "@/pages/BrandPresets";
 import { AiModelSwap } from "@/pages/AiModelSwap";
 import { ProductImages } from "@/pages/ProductImages";
 import { HistoryPage } from "@/pages/HistoryPage";
+import { ProfileCenter } from "@/pages/ProfileCenter";
+import { HomePage } from "@/pages/HomePage";
 import { Modal } from "@/components/UI/Modal";
 
 function App() {
   const route = useAppStore((s) => s.route);
   const loggedIn = useAppStore((s) => s.loggedIn);
 
-  if (!loggedIn || route === "login") return <Login />;
   if (route === "register") return <Register />;
+  if (!loggedIn || route === "login") return <Login />;
 
   const page = (() => {
     switch (route) {
+      case "home":
+        return <HomePage />;
       case "brand":
         return <BrandStyle />;
       case "brand-presets":
@@ -31,8 +35,10 @@ function App() {
         return <AiModelSwap />;
       case "history":
         return <HistoryPage />;
+      case "profile":
+        return <ProfileCenter />;
       default:
-        return <ProductImages />;
+        return <HomePage />;
     }
   })();
 

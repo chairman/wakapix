@@ -515,40 +515,101 @@ export const Login: React.FC = () => {
 
 export const Register: React.FC = () => {
   const { setRoute, login } = useAppStore();
+  const [phone, setPhone] = useState("");
+  const [code, setCode] = useState("");
+  const [sending, setSending] = useState(false);
+  const [cd, setCd] = useState(0);
+  const sent = useRef(false);
+  const [agreed, setAgreed] = useState(false);
+
+  const sendCode = () => {
+    if (sending || phone.length < 11) return;
+    setSending(true);
+    sent.current = true;
+    setCd(60);
+    setTimeout(() => setSending(false), 200);
+    const t = setInterval(() => {
+      setCd((n) => {
+        if (n <= 1) {
+          clearInterval(t);
+          return 0;
+        }
+        return n - 1;
+      });
+    }, 1000);
+  };
+
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-[#0F2240] to-[#1E3A5F]">
-      <div className="w-[460px] bg-white rounded-xl shadow-2xl p-8">
+    <div className="h-screen flex items-center justify-center bg-white">
+      <div className="w-[460px] px-8">
         <div className="text-center">
-          <div className="text-lg font-bold text-brand-primary">创建账号</div>
-          <div className="text-xs text-gray-500 mt-1">3 步完成注册 · 送 500 张免费额度</div>
+          <Logo size={40} dark />
+          <div className="mt-6 text-xl font-bold text-gray-800">注册开始使用</div>
         </div>
-        <div className="mt-6 space-y-3">
-          <input className="waka-input" placeholder="公司 / 店铺名称" />
-          <input className="waka-input" placeholder="邮箱" />
-          <input className="waka-input" placeholder="密码（至少 8 位）" />
-          <select className="waka-input" defaultValue="amazon">
-            <option value="amazon">主要销售平台：Amazon</option>
-            <option value="shopify">Shopify</option>
-            <option value="tiktok">TikTok Shop</option>
-            <option value="multi">多平台经营</option>
-          </select>
-          <label className="flex items-start gap-2 text-[11.5px] text-gray-500 pt-1">
-            <input type="checkbox" defaultChecked className="accent-brand-accent mt-0.5" />
+
+        <div className="mt-8 space-y-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="w-[72px] px-3 py-3 rounded-lg border border-gray-200 bg-gray-50 text-[13px] text-gray-700 font-medium flex items-center justify-center">
+                <span>+86</span>
+                <svg className="w-3 h-3 ml-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+              <input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 11))}
+                className="waka-input flex-1 h-[48px]"
+                placeholder="输入手机号"
+              />
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center gap-3">
+              <input
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                className="waka-input flex-1 h-[48px]"
+                placeholder="输入短信验证码"
+              />
+              <button
+                onClick={sendCode}
+                disabled={cd > 0 || phone.length < 11}
+                className="flex-shrink-0 h-[48px] px-6 rounded-lg border-2 border-blue-600 text-blue-600 text-[13px] font-medium hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-transparent transition"
+              >
+                {cd > 0 ? `${cd}s 后重发` : sent.current ? "重新获取" : "获取验证码"}
+              </button>
+            </div>
+          </div>
+
+          <label className="flex items-start gap-2 text-[12px] text-gray-500 pt-1">
+            <input
+              type="checkbox"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              className="accent-blue-600 mt-0.5"
+            />
             <span>
-              我已阅读并同意
-              <a className="text-brand-accent hover:underline mx-1">《用户协议》</a>
-              和
-              <a className="text-brand-accent hover:underline mx-1">《隐私政策》</a>
+              阅读并同意
+              <a className="text-blue-600 hover:underline mx-0.5">领星 ERP条款与条件</a>
             </span>
           </label>
-          <button onClick={() => login("new@waka.com")} className="waka-btn-primary w-full h-[42px] mt-2">
-            创建并开始免费试用
+
+          <button
+            onClick={() => login(phone + "@waka.io")}
+            disabled={phone.length !== 11 || code.length < 4 || !agreed}
+            className="w-full h-[50px] rounded-lg text-white text-base font-medium transition disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ backgroundColor: "#2563EB" }}
+          >
+            开始使用
           </button>
         </div>
-        <div className="text-center text-[12px] text-gray-500 mt-6">
+
+        <div className="text-center text-[13px] text-gray-500 mt-6">
           已有账号？
-          <button onClick={() => setRoute("login")} className="ml-1 text-brand-accent hover:underline font-medium">
-            返回登录
+          <button onClick={() => setRoute("login")} className="ml-1 text-blue-600 hover:underline font-medium">
+            去登录
           </button>
         </div>
       </div>
