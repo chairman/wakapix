@@ -31,10 +31,10 @@ const ProfileCenter: React.FC = () => {
     consumptionRecords,
     subscriptionPlans,
     setRoute,
+    profileActiveTab,
+    setProfileActiveTab,
     logout,
   } = useAppStore();
-
-  const [activeTab, setActiveTab] = useState<TabType>("profile");
   const [planTab, setPlanTab] = useState<PlanTabType>("personal");
   const [showTeamSwitcher, setShowTeamSwitcher] = useState(false);
   const [selectedAddon, setSelectedAddon] = useState<string | null>("addon-2");
@@ -172,9 +172,9 @@ const ProfileCenter: React.FC = () => {
               {tabs.map((tab) => (
                 <button
                   key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
+                  onClick={() => setProfileActiveTab(tab.key)}
                   className={`relative flex items-center gap-2 px-4 py-2.5 mx-2 rounded-lg text-[13px] text-left transition ${
-                    activeTab === tab.key
+                    profileActiveTab === tab.key
                       ? "bg-brand-accent text-white font-medium"
                       : "text-gray-600 hover:bg-gray-50"
                   }`}
@@ -188,7 +188,7 @@ const ProfileCenter: React.FC = () => {
 
           {/* Main Content */}
           <div className="flex-1">
-            {activeTab === "profile" && (
+            {profileActiveTab === "profile" && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">个人信息</h3>
                 <div className="space-y-4">
@@ -220,7 +220,7 @@ const ProfileCenter: React.FC = () => {
               </div>
             )}
 
-            {activeTab === "orders" && (
+            {profileActiveTab === "orders" && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div className="p-6 border-b border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-800">订单记录</h3>
@@ -286,7 +286,7 @@ const ProfileCenter: React.FC = () => {
               </div>
             )}
 
-            {activeTab === "consumption" && (
+            {profileActiveTab === "consumption" && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div className="p-6 border-b border-gray-200">
                   <div className="flex items-center justify-between">
@@ -390,7 +390,7 @@ const ProfileCenter: React.FC = () => {
               </div>
             )}
 
-            {activeTab === "subscription" && (
+            {profileActiveTab === "subscription" && (
               <div className="space-y-6">
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                   <div className="flex items-center justify-between mb-4">

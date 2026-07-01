@@ -15,7 +15,7 @@ type RouteKey =
 
 interface ModalState {
   open: boolean;
-  kind?: "import-amazon" | "import-shopify" | "upgrade" | "forgot" | null;
+  kind?: "import-amazon" | "import-shopify" | "upgrade" | "forgot" | "help" | null;
   title?: string;
   data?: any;
 }
@@ -59,6 +59,7 @@ interface AppState {
   monthUsed: number;
   modal: ModalState;
   currentContext: "personal" | string;
+  profileActiveTab: "profile" | "orders" | "consumption" | "subscription";
   personalInfo: {
     name: string;
     phone: string;
@@ -70,6 +71,7 @@ interface AppState {
   consumptionRecords: ConsumptionRecord[];
   subscriptionPlans: SubscriptionPlan[];
   setRoute: (r: RouteKey) => void;
+  setProfileActiveTab: (tab: "profile" | "orders" | "consumption" | "subscription") => void;
   login: (email: string) => void;
   logout: () => void;
   openModal: (m: Partial<ModalState>) => void;
@@ -85,6 +87,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   monthUsed: 158,
   modal: { open: false, kind: null },
   currentContext: "personal",
+  profileActiveTab: "profile",
   personalInfo: {
     name: "用户0536",
     phone: "133****0536",
@@ -172,6 +175,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     { id: "addon-3", name: "算力加油包", type: "addon", price: 1200, originalPrice: 1200, period: "once", quota: 20000, features: [] },
   ],
   setRoute: (r) => set({ route: r, navKey: r }),
+  setProfileActiveTab: (tab) => set({ profileActiveTab: tab }),
   login: (_email) => set({ loggedIn: true, route: "model-swap", navKey: "model-swap" }),
   logout: () => set({ loggedIn: false, route: "login", navKey: "model-swap" }),
   openModal: (m) => set({ modal: { open: true, ...m } }),

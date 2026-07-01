@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAppStore } from "@/store/useStore";
 import { Search, ChevronDown, Sparkles, X, ArrowRight, Users, UserRound, Check, Settings, Globe, HelpCircle, LogOut, Zap, CreditCard, ChevronRight, Palette, Image, History as HistoryIcon, Home } from "lucide-react";
 
@@ -56,7 +56,7 @@ const UpgradeModal: React.FC = () => {
 };
 
 export const TopBar: React.FC = () => {
-  const { monthQuota, monthUsed, openModal, currentContext, switchContext, teams, personalInfo, logout, setRoute, navKey } = useAppStore();
+  const { monthQuota, monthUsed, openModal, currentContext, switchContext, teams, personalInfo, logout, setRoute, setProfileActiveTab, navKey } = useAppStore();
   const [search, setSearch] = useState("");
   const [showTeamSwitcher, setShowTeamSwitcher] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -64,6 +64,22 @@ export const TopBar: React.FC = () => {
   const pct = Math.min(100, Math.round((monthUsed / monthQuota) * 100));
   const isPersonal = currentContext === "personal";
   const currentTeam = teams.find((t) => t.id === currentContext);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      const isClickInsideMenu = target.closest('.user-menu-container') !== null;
+      if (!isClickInsideMenu) {
+        setShowUserMenu(false);
+        setShowTeamSwitcher(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <>
@@ -119,9 +135,16 @@ export const TopBar: React.FC = () => {
                 <ChevronDown className="w-4 h-4 text-gray-400" />
               </button>
               {showUserMenu || showTeamSwitcher ? (
-                <div className="absolute right-0 top-full mt-2 flex gap-2 z-40">
+                <div className="absolute right-0 top-full mt-2 flex gap-2 z-40 user-menu-container">
                   {showTeamSwitcher && (
-                    <div className="w-60 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden">
+                    <div 
+                      className="w-60 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden"
+                      onMouseLeave={() => {
+                        if (!showUserMenu) {
+                          setShowTeamSwitcher(false);
+                        }
+                      }}
+                    >
                       <button
                         onClick={() => {
                           switchContext("personal");
@@ -194,7 +217,11 @@ export const TopBar: React.FC = () => {
                   {showUserMenu && (
                     <div
                       className="w-72 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden"
-                      onMouseLeave={() => setShowUserMenu(false)}
+                      onMouseLeave={() => {
+                        if (!showTeamSwitcher) {
+                          setShowUserMenu(false);
+                        }
+                      }}
                     >
                       <div className="p-4 border-b border-gray-100">
                         <div className="flex items-center justify-between">
@@ -257,7 +284,11 @@ export const TopBar: React.FC = () => {
                       </div>
 
                       <div className="divide-y divide-gray-100">
-                        <button className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition">
+                        <button onClick={() => {
+                          setRoute("profile");
+                          setProfileActiveTab("subscription");
+                          setShowUserMenu(false);
+                        }} className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition">
                           <div className="flex items-center gap-3">
                             <CreditCard className="w-4 h-4 text-blue-500" />
                             <span className="text-sm text-gray-700">套餐管理</span>
@@ -266,6 +297,7 @@ export const TopBar: React.FC = () => {
                         </button>
                         <button onClick={() => {
                           setRoute("profile");
+                          setProfileActiveTab("profile");
                           setShowUserMenu(false);
                         }} className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition">
                           <div className="flex items-center gap-3">
@@ -274,13 +306,7 @@ export const TopBar: React.FC = () => {
                           </div>
                           <ChevronRight className="w-4 h-4 text-gray-400" />
                         </button>
-                        <button className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition">
-                          <div className="flex items-center gap-3">
-                            <Settings className="w-4 h-4 text-purple-500" />
-                            <span className="text-sm text-gray-700">API 设置</span>
-                          </div>
-                          <ChevronRight className="w-4 h-4 text-gray-400" />
-                        </button>
+
                         <button className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition">
                           <div className="flex items-center gap-3">
                             <Globe className="w-4 h-4 text-orange-500" />
@@ -288,7 +314,10 @@ export const TopBar: React.FC = () => {
                           </div>
                           <ChevronRight className="w-4 h-4 text-gray-400" />
                         </button>
-                        <button className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition">
+                        <button onClick={() => {
+                          openModal({ kind: "help", title: "帮助与客服" });
+                          setShowUserMenu(false);
+                        }} className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition">
                           <div className="flex items-center gap-3">
                             <HelpCircle className="w-4 h-4 text-cyan-500" />
                             <span className="text-sm text-gray-700">帮助与客服</span>
